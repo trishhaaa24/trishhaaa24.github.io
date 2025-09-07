@@ -1,155 +1,81 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 
 interface ParticleBackgroundProps {
   isDark: boolean;
 }
 
-const ParticleBackground: React.FC<ParticleBackgroundProps> = ({ isDark }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
-  const particlesRef = useRef<THREE.Points | null>(null);
-  const sceneRef = useRef<THREE.Scene | null>(null);
-  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
-  const animationIdRef = useRef<number | null>(null);
+const ParticleBackground: React.FC<ParticleBackgroundProps> = ({ isDark: _isDark }) => {
+  const mountRef = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<THREE.Scene>();
+  const rendererRef = useRef<THREE.WebGLRenderer>();
+  const cameraRef = useRef<THREE.PerspectiveCamera>();
+  const particlesRef = useRef<THREE.Points>();
+  const animationIdRef = useRef<number>();
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!mountRef.current) return;
 
     // Scene setup
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ 
-      canvas: canvasRef.current, 
-      alpha: true, 
-      antialias: true 
-    });
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x000000, 0);
-
-    // Store references
     sceneRef.current = scene;
-    rendererRef.current = renderer;
+
+    // Camera setup
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    camera.position.z = 5;
     cameraRef.current = camera;
 
-    // Create particle system
+    // Renderer setup
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    mountRef.current.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
+
+    // Create particles
     const particleCount = 2000;
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
-    const sizes = new Float32Array(particleCount);
-
-    // Color palette for dark theme
-    const colorPalette = isDark ? [
-      new THREE.Color(0x00ff88), // Neon green
-      new THREE.Color(0x00d4aa), // Teal
-      new THREE.Color(0x00a8ff), // Blue
-      new THREE.Color(0x8b5cf6), // Purple
-    ] : [
-      new THREE.Color(0x10b981), // Green
-      new THREE.Color(0x06b6d4), // Cyan
-      new THREE.Color(0x3b82f6), // Blue
-      new THREE.Color(0x8b5cf6), // Purple
-    ];
 
     for (let i = 0; i < particleCount; i++) {
-      // Position particles in a sphere
-      const radius = Math.random() * 20 + 5;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(Math.random() * 2 - 1);
-      
-      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i * 3 + 2] = radius * Math.cos(phi);
+      // Position
+      positions[i * 3] = (Math.random() - 0.5) * 20;
+      positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+      positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
 
-      // Random color from palette
-      const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+      // Color (green gradient)
+      const color = new THREE.Color();
+      color.setHSL(0.3 + Math.random() * 0.2, 0.8, 0.5 + Math.random() * 0.3);
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
       colors[i * 3 + 2] = color.b;
-
-      // Random size
-      sizes[i] = Math.random() * 2 + 0.5;
     }
 
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
-    // Custom shader material for better particle effects
-    const material = new THREE.ShaderMaterial({
-      uniforms: {
-        time: { value: 0 },
-        mouse: { value: new THREE.Vector2(0, 0) },
-        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
-      },
-      vertexShader: `
-        attribute float size;
-        uniform float time;
-        uniform vec2 mouse;
-        varying vec3 vColor;
-        varying float vAlpha;
-        
-        void main() {
-          vColor = color;
-          
-          // Create wave motion
-          vec3 pos = position;
-          pos.y += sin(pos.x * 0.1 + time) * 0.5;
-          pos.x += cos(pos.z * 0.1 + time) * 0.3;
-          
-          // Mouse interaction
-          float mouseInfluence = 1.0 - distance(pos.xy, mouse * 10.0) * 0.1;
-          mouseInfluence = max(0.0, mouseInfluence);
-          pos.xy += (pos.xy - mouse * 10.0) * mouseInfluence * 0.1;
-          
-          // Pulsing effect
-          float pulse = sin(time * 2.0 + pos.x * 0.1) * 0.1 + 1.0;
-          pos *= pulse;
-          
-          vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-          gl_Position = projectionMatrix * mvPosition;
-          
-          // Size based on distance and mouse interaction
-          gl_PointSize = size * (300.0 / -mvPosition.z) * (0.5 + mouseInfluence * 0.5);
-          
-          // Alpha based on distance and mouse interaction
-          vAlpha = (1.0 - length(pos) / 25.0) * (0.3 + mouseInfluence * 0.4);
-        }
-      `,
-      fragmentShader: `
-        varying vec3 vColor;
-        varying float vAlpha;
-        
-        void main() {
-          // Create circular particles
-          float distance = length(gl_PointCoord - vec2(0.5));
-          if (distance > 0.5) discard;
-          
-          // Add glow effect
-          float glow = 1.0 - distance * 2.0;
-          glow = pow(glow, 2.0);
-          
-          gl_FragColor = vec4(vColor, vAlpha * glow);
-        }
-      `,
+    const material = new THREE.PointsMaterial({
+      size: 0.02,
+      vertexColors: true,
       transparent: true,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
+      opacity: 0.8,
     });
 
-    particlesRef.current = new THREE.Points(geometry, material);
-    scene.add(particlesRef.current);
+    const particles = new THREE.Points(geometry, material);
+    scene.add(particles);
+    particlesRef.current = particles;
 
-    camera.position.z = 15;
-
-    // Mouse movement handler
+    // Mouse interaction
+    const mouse = new THREE.Vector2();
     const handleMouseMove = (event: MouseEvent) => {
-      mouseRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouseRef.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     };
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -158,87 +84,62 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({ isDark }) => {
     const animate = () => {
       animationIdRef.current = requestAnimationFrame(animate);
 
-      if (particlesRef.current && material.uniforms) {
-        // Update time uniform
-        material.uniforms.time.value = performance.now() * 0.001;
-        material.uniforms.mouse.value.set(mouseRef.current.x, mouseRef.current.y);
-
-        // Rotate particles
+      if (particlesRef.current) {
         particlesRef.current.rotation.x += 0.001;
         particlesRef.current.rotation.y += 0.002;
-        particlesRef.current.rotation.z += 0.0005;
 
-        // Update particle positions for wave motion
+        // Mouse interaction
+        particlesRef.current.position.x = mouse.x * 0.5;
+        particlesRef.current.position.y = mouse.y * 0.5;
+
+        // Wave animation
         const positions = particlesRef.current.geometry.attributes.position.array as Float32Array;
-        const time = performance.now() * 0.001;
-        
         for (let i = 0; i < particleCount; i++) {
-          const x = positions[i * 3];
-          const y = positions[i * 3 + 1];
-          const z = positions[i * 3 + 2];
-          
-          // Create subtle wave motion
-          positions[i * 3] = x + Math.sin(time + y * 0.01) * 0.01;
-          positions[i * 3 + 1] = y + Math.cos(time + x * 0.01) * 0.01;
-          positions[i * 3 + 2] = z + Math.sin(time + x * 0.01 + y * 0.01) * 0.005;
+          const i3 = i * 3;
+          positions[i3 + 1] += Math.sin(Date.now() * 0.001 + positions[i3] * 0.01) * 0.001;
         }
-        
         particlesRef.current.geometry.attributes.position.needsUpdate = true;
       }
 
-      renderer.render(scene, camera);
+      if (rendererRef.current && sceneRef.current && cameraRef.current) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+      }
     };
 
     animate();
 
     // Handle resize
     const handleResize = () => {
-      if (camera && renderer) {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        if (material.uniforms && material.uniforms.resolution) {
-          material.uniforms.resolution.value.set(window.innerWidth, window.innerHeight);
-        }
+      if (cameraRef.current && rendererRef.current) {
+        cameraRef.current.aspect = window.innerWidth / window.innerHeight;
+        cameraRef.current.updateProjectionMatrix();
+        rendererRef.current.setSize(window.innerWidth, window.innerHeight);
       }
     };
 
     window.addEventListener('resize', handleResize);
 
+    // Cleanup
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('resize', handleResize);
-      
       if (animationIdRef.current) {
         cancelAnimationFrame(animationIdRef.current);
       }
-      
-      if (renderer) {
-        renderer.dispose();
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', handleResize);
+      if (mountRef.current && rendererRef.current) {
+        mountRef.current.removeChild(rendererRef.current.domElement);
       }
-      
-      if (geometry) {
-        geometry.dispose();
-      }
-      
-      if (material) {
-        material.dispose();
+      if (rendererRef.current) {
+        rendererRef.current.dispose();
       }
     };
-  }, [isDark]);
+  }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none opacity-70"
-      style={{ 
-        zIndex: -1,
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh'
-      }}
+    <div
+      ref={mountRef}
+      className="fixed inset-0 z-0 pointer-events-none"
+      style={{ background: 'transparent' }}
     />
   );
 };
