@@ -13,7 +13,8 @@ import {
   X,
   ExternalLink,
   Twitter,
-  Code
+  Code,
+  Menu
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ParticleBackground from './components/ParticleBackground';
@@ -347,38 +348,38 @@ const SearchModal: React.FC<{
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-start justify-center pt-20"
+          className="fixed inset-0 z-50 flex items-start justify-center pt-16 md:pt-20"
         >
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className={`relative w-full max-w-2xl mx-4 rounded-2xl shadow-2xl ${
+            className={`relative w-full max-w-2xl mx-2 md:mx-4 rounded-xl md:rounded-2xl shadow-2xl ${
               isDark ? 'bg-gray-900 border border-gray-700' : 'bg-white border border-gray-200'
             }`}
           >
-            <div className="flex items-center p-4 border-b border-gray-700">
-              <Search className="w-5 h-5 text-gray-400 mr-3" />
+            <div className="flex items-center p-3 md:p-4 border-b border-gray-700">
+              <Search className="w-4 h-4 md:w-5 md:h-5 text-gray-400 mr-2 md:mr-3" />
               <input
                 ref={inputRef}
                 type="text"
                 placeholder="Search projects, experience, blogs..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`flex-1 bg-transparent outline-none ${
+                className={`flex-1 bg-transparent outline-none text-sm md:text-base ${
                   isDark ? 'text-white placeholder-gray-400' : 'text-gray-900 placeholder-gray-500'
                 }`}
               />
               <button
                 onClick={onClose}
-                className="ml-3 p-1 rounded-lg hover:bg-gray-700 transition-colors"
+                className="ml-2 md:ml-3 p-1 rounded-lg hover:bg-gray-700 transition-colors"
               >
-                <X className="w-5 h-5 text-gray-400" />
+                <X className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
               </button>
             </div>
             
-            <div className="max-h-96 overflow-y-auto">
+            <div className="max-h-80 md:max-h-96 overflow-y-auto">
               {isLoading ? (
                 <div className={`p-8 text-center ${
                   isDark ? 'text-gray-400' : 'text-gray-500'
@@ -477,20 +478,20 @@ const ResumeModal: React.FC<{
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4"
         >
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className={`relative w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden ${
+            className={`relative w-full max-w-4xl max-h-[95vh] md:max-h-[90vh] rounded-xl md:rounded-2xl shadow-2xl overflow-hidden ${
               isDark ? 'bg-gray-900 border border-gray-700' : 'bg-white border border-gray-200'
             }`}
           >
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className={`text-2xl font-bold ${
+            <div className="p-4 md:p-6">
+              <div className="flex justify-between items-center mb-4 md:mb-6">
+                <h2 className={`text-lg md:text-2xl font-bold ${
                   isDark ? 'text-white' : 'text-gray-800'
                 }`}>
                   Resume - Trisha Rami
@@ -499,11 +500,11 @@ const ResumeModal: React.FC<{
                   onClick={onClose}
                   className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
                 >
-                  <X className="w-5 h-5 text-gray-400" />
+                  <X className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
                 </button>
               </div>
               
-              <div className="max-h-[70vh] overflow-y-auto">
+              <div className="max-h-[75vh] md:max-h-[70vh] overflow-y-auto">
                 <div className={`p-6 rounded-lg ${
                   isDark ? 'bg-gray-800/50' : 'bg-gray-50'
                 }`}>
@@ -914,20 +915,20 @@ const ContactModal: React.FC<{
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4"
         >
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
           <motion.div
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className={`relative w-full max-w-2xl rounded-2xl shadow-2xl ${
+            className={`relative w-full max-w-2xl rounded-xl md:rounded-2xl shadow-2xl ${
               isDark ? 'bg-gray-900 border border-gray-700' : 'bg-white border border-gray-200'
             }`}
           >
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className={`text-2xl font-bold ${
+            <div className="p-4 md:p-6">
+              <div className="flex justify-between items-center mb-4 md:mb-6">
+                <h2 className={`text-lg md:text-2xl font-bold ${
                   isDark ? 'text-white' : 'text-gray-800'
                 }`}>
                   Get In Touch
@@ -936,18 +937,18 @@ const ContactModal: React.FC<{
                   onClick={onClose}
                   className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
                 >
-                  <X className="w-5 h-5 text-gray-400" />
+                  <X className="w-4 h-4 md:w-5 md:h-5 text-gray-400" />
                 </button>
               </div>
               
-              <form onSubmit={handleContactSubmit} className="space-y-4">
+              <form onSubmit={handleContactSubmit} className="space-y-3 md:space-y-4">
                 <div>
                   <input
                     type="text"
                     placeholder="Your Name"
                     value={contactForm.name}
                     onChange={(e) => setContactForm({...contactForm, name: e.target.value})}
-                    className={`w-full px-4 py-3 rounded-lg border transition-all duration-300 ${
+                    className={`w-full px-3 md:px-4 py-2 md:py-3 rounded-lg border transition-all duration-300 text-sm md:text-base ${
                       isDark 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-green-500' 
                         : 'bg-white border-gray-300 text-gray-800 placeholder-gray-500 focus:border-green-500'
@@ -961,7 +962,7 @@ const ContactModal: React.FC<{
                     placeholder="Your Email"
                     value={contactForm.email}
                     onChange={(e) => setContactForm({...contactForm, email: e.target.value})}
-                    className={`w-full px-4 py-3 rounded-lg border transition-all duration-300 ${
+                    className={`w-full px-3 md:px-4 py-2 md:py-3 rounded-lg border transition-all duration-300 text-sm md:text-base ${
                       isDark 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-green-500' 
                         : 'bg-white border-gray-300 text-gray-800 placeholder-gray-500 focus:border-green-500'
@@ -972,10 +973,10 @@ const ContactModal: React.FC<{
                 <div>
                   <textarea
                     placeholder="Your Message"
-                    rows={4}
+                    rows={3}
                     value={contactForm.message}
                     onChange={(e) => setContactForm({...contactForm, message: e.target.value})}
-                    className={`w-full px-4 py-3 rounded-lg border transition-all duration-300 ${
+                    className={`w-full px-3 md:px-4 py-2 md:py-3 rounded-lg border transition-all duration-300 text-sm md:text-base ${
                       isDark 
                         ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-green-500' 
                         : 'bg-white border-gray-300 text-gray-800 placeholder-gray-500 focus:border-green-500'
@@ -985,7 +986,7 @@ const ContactModal: React.FC<{
                 </div>
                 <button
                   type="submit"
-                  className={`w-full px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                  className={`w-full px-4 md:px-6 py-2 md:py-3 rounded-lg font-semibold transition-all duration-300 text-sm md:text-base ${
                     isDark 
                       ? 'bg-green-600 text-black hover:bg-green-700' 
                       : 'bg-green-500 text-white hover:bg-green-600'
@@ -1007,6 +1008,7 @@ const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
   const { searchQuery, setSearchQuery, searchResults, isSearchOpen, setIsSearchOpen, highlightedText, isLoading } = useSearch();
 
@@ -1017,6 +1019,7 @@ const App: React.FC = () => {
       element.scrollIntoView({ behavior: 'smooth' });
     }
     setActiveSection(sectionId);
+    setIsMobileMenuOpen(false); // Close mobile menu when navigating
   };
 
   return (
@@ -1061,7 +1064,7 @@ const App: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <h1 className={`text-xl font-bold flex items-center gap-2 ${
+              <h1 className={`text-lg md:text-xl font-bold flex items-center gap-2 ${
                 isDark ? 'text-white' : 'text-gray-800'
               }`}>
                 {PORTFOLIO_DATA.name}
@@ -1069,7 +1072,7 @@ const App: React.FC = () => {
               </h1>
             </div>
 
-            {/* Navigation */}
+            {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-6">
               {[
                 { id: 'home', label: 'Home' },
@@ -1097,7 +1100,7 @@ const App: React.FC = () => {
             </nav>
 
             {/* Right side controls */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4">
               {/* Search Button */}
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -1108,7 +1111,7 @@ const App: React.FC = () => {
                 }`}
                 title="Search (Ctrl+F)"
               >
-                <Search size={20} />
+                <Search size={18} className="md:w-5 md:h-5" />
               </motion.button>
 
               {/* Theme Toggle */}
@@ -1120,14 +1123,14 @@ const App: React.FC = () => {
                   isDark ? 'bg-gray-800 text-yellow-400' : 'bg-gray-100 text-gray-600'
                 }`}
               >
-                {isDark ? <Sun size={20} /> : <Moon size={20} />}
+                {isDark ? <Sun size={18} className="md:w-5 md:h-5" /> : <Moon size={18} className="md:w-5 md:h-5" />}
               </motion.button>
               
-              {/* Resume Button */}
+              {/* Resume Button - Hidden on mobile */}
               <motion.button
                 onClick={() => setIsResumeModalOpen(true)}
                 whileHover={{ scale: 1.05 }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-300 ${
                   isDark 
                     ? 'bg-gradient-to-r from-green-600 to-blue-600 text-black hover:from-green-700 hover:to-blue-700' 
                     : 'bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600'
@@ -1136,15 +1139,83 @@ const App: React.FC = () => {
                 <Download size={20} />
                 Resume
               </motion.button>
+
+              {/* Mobile Menu Button */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className={`md:hidden p-2 rounded-lg transition-all duration-300 ${
+                  isDark ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                <Menu size={20} />
+              </motion.button>
             </div>
           </div>
+
+          {/* Mobile Navigation Menu */}
+          <AnimatePresence>
+            {isMobileMenuOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className={`md:hidden border-t ${
+                  isDark ? 'border-gray-800' : 'border-gray-200'
+                }`}
+              >
+                <div className="py-4 space-y-2">
+                  {[
+                    { id: 'home', label: 'Home' },
+                    { id: 'experience', label: 'Experience' },
+                    { id: 'blog', label: 'Blogs' },
+                    { id: 'projects', label: 'Projects' },
+                    { id: 'publications', label: 'Publications' },
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => scrollToSection(item.id)}
+                      className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-200 ${
+                        activeSection === item.id
+                          ? isDark 
+                            ? 'bg-green-600 text-black' 
+                            : 'bg-green-500 text-white'
+                          : isDark
+                            ? 'text-gray-300 hover:text-white hover:bg-gray-800' 
+                            : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+                      }`}
+                    >
+                      {item.label}
+                    </button>
+                  ))}
+                  
+                  {/* Mobile Resume Button */}
+                  <button
+                    onClick={() => {
+                      setIsResumeModalOpen(true);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 rounded-lg transition-all duration-300 flex items-center gap-2 ${
+                      isDark 
+                        ? 'bg-gradient-to-r from-green-600 to-blue-600 text-black hover:from-green-700 hover:to-blue-700' 
+                        : 'bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600'
+                    }`}
+                  >
+                    <Download size={18} />
+                    Resume
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </header>
 
       {/* Main Content */}
       <main>
         {/* Hero Section */}
-        <section id="home" className="py-20 relative min-h-screen flex items-center justify-center overflow-hidden">
+        <section id="home" className="py-12 md:py-20 relative min-h-screen flex items-center justify-center overflow-hidden">
           <div className="max-w-6xl mx-auto px-4 text-center relative z-10">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1152,43 +1223,45 @@ const App: React.FC = () => {
               transition={{ duration: 0.8 }}
             >
               {/* Main Headline */}
-              <h1 className={`text-6xl md:text-8xl font-black mb-6 ${
+              <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-black mb-4 md:mb-6 ${
                 isDark ? 'text-white' : 'text-gray-800'
               }`}>
                 <span className="bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
                   Blockchain
                 </span>
                 <br />
-                Researcher & Developer
+                <span className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl">
+                  Researcher & Developer
+                </span>
               </h1>
               
               {/* Greeting */}
-              <p className={`text-xl md:text-2xl mb-8 font-light max-w-3xl mx-auto ${
+              <p className={`text-lg sm:text-xl md:text-2xl mb-6 md:mb-8 font-light max-w-3xl mx-auto px-4 ${
                 isDark ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 {PORTFOLIO_DATA.greeting}
               </p>
 
               {/* CTA Button */}
-              <div className="flex justify-center items-center mb-12">
+              <div className="flex justify-center items-center mb-8 md:mb-12">
                 <motion.button
                   onClick={() => setIsContactModalOpen(true)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-gradient-to-r from-green-400 to-blue-500 text-black font-semibold rounded-lg flex items-center gap-2 hover:from-green-500 hover:to-blue-600 transition-all duration-300"
+                  className="px-6 md:px-8 py-3 md:py-4 bg-gradient-to-r from-green-400 to-blue-500 text-black font-semibold rounded-lg flex items-center gap-2 hover:from-green-500 hover:to-blue-600 transition-all duration-300 text-sm md:text-base"
                 >
                   Talk to us
-                  <ArrowRight size={20} />
+                  <ArrowRight size={18} className="md:w-5 md:h-5" />
                 </motion.button>
               </div>
 
               {/* Social Links */}
-              <div className="flex justify-center space-x-6">
+              <div className="flex justify-center space-x-4 md:space-x-6">
                 {[
-                  { icon: <Mail size={28} />, href: `mailto:${PORTFOLIO_DATA.contact.email}` },
-                  { icon: <Github size={28} />, href: PORTFOLIO_DATA.contact.github },
-                  { icon: <Linkedin size={28} />, href: PORTFOLIO_DATA.contact.linkedin },
-                  { icon: <Twitter size={28} />, href: PORTFOLIO_DATA.contact.twitter },
+                  { icon: <Mail size={24} className="md:w-7 md:h-7" />, href: `mailto:${PORTFOLIO_DATA.contact.email}` },
+                  { icon: <Github size={24} className="md:w-7 md:h-7" />, href: PORTFOLIO_DATA.contact.github },
+                  { icon: <Linkedin size={24} className="md:w-7 md:h-7" />, href: PORTFOLIO_DATA.contact.linkedin },
+                  { icon: <Twitter size={24} className="md:w-7 md:h-7" />, href: PORTFOLIO_DATA.contact.twitter },
                 ].map((social, index) => (
                   <motion.a
                     key={index}
@@ -1210,7 +1283,7 @@ const App: React.FC = () => {
         </section>
 
         {/* Experience Section */}
-        <section id="experience" className="py-16">
+        <section id="experience" className="py-12 md:py-16">
           <div className="max-w-6xl mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1218,7 +1291,7 @@ const App: React.FC = () => {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className={`text-4xl font-bold mb-12 ${
+              <h2 className={`text-3xl md:text-4xl font-bold mb-8 md:mb-12 text-center ${
                 isDark ? 'text-white' : 'text-gray-800'
               }`}>
                 Experience
@@ -1252,22 +1325,22 @@ const App: React.FC = () => {
                     {exp.researchFocus ? (
                       // Detailed experience card for research intern
                       <div>
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h3 className={`text-2xl font-bold mb-2 ${
+                        <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-4 space-y-2 md:space-y-0">
+                          <div className="flex-1">
+                            <h3 className={`text-xl md:text-2xl font-bold mb-2 ${
                               isDark ? 'text-white' : 'text-gray-800'
                             }`}>
                               {exp.role}
                             </h3>
-                            <p className={`text-lg ${
+                            <p className={`text-base md:text-lg ${
                               isDark ? 'text-gray-300' : 'text-gray-600'
                             }`}>
                               {exp.organization}
                             </p>
                           </div>
-                          <div className="text-right">
-                            <div className="flex items-center gap-2 mb-1">
-                              <Globe size={16} className="text-gray-400" />
+                          <div className="flex flex-col md:text-right space-y-1">
+                            <div className="flex items-center gap-2">
+                              <Globe size={14} className="text-gray-400" />
                               <span className={`text-sm ${
                                 isDark ? 'text-gray-400' : 'text-gray-500'
                               }`}>
@@ -1275,7 +1348,7 @@ const App: React.FC = () => {
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Phone size={16} className="text-gray-400" />
+                              <Phone size={14} className="text-gray-400" />
                               <span className={`text-sm ${
                                 isDark ? 'text-gray-400' : 'text-gray-500'
                               }`}>
@@ -1391,7 +1464,7 @@ const App: React.FC = () => {
         </section>
 
         {/* Blog Section */}
-        <section id="blog" className="py-16">
+        <section id="blog" className="py-12 md:py-16">
           <div className="max-w-6xl mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1399,17 +1472,17 @@ const App: React.FC = () => {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className={`text-4xl font-bold mb-4 ${
+              <h2 className={`text-3xl md:text-4xl font-bold mb-4 text-center ${
                 isDark ? 'text-white' : 'text-gray-800'
               }`}>
                 Blogs
               </h2>
-              <p className={`text-lg mb-12 ${
+              <p className={`text-base md:text-lg mb-8 md:mb-12 text-center px-4 ${
                 isDark ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 Sharing insights and thoughts on blockchain technology, AI, and the future of decentralized systems.
               </p>
-              <div className="grid md:grid-cols-3 gap-6 mb-12">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
                 {PORTFOLIO_DATA.blog.map((post, index) => (
                   <motion.div
                     key={index}
@@ -1454,13 +1527,13 @@ const App: React.FC = () => {
                       </div>
                     </div>
                     
-                    <h3 className={`text-lg font-bold mb-3 ${
+                    <h3 className={`text-base md:text-lg font-bold mb-3 ${
                       isDark ? 'text-white' : 'text-gray-800'
                     }`}>
                       {post.title}
                     </h3>
                     
-                    <p className={`text-sm mb-4 ${
+                    <p className={`text-xs md:text-sm mb-4 line-clamp-3 ${
                       isDark ? 'text-gray-300' : 'text-gray-700'
                     }`}>
                       {post.excerpt}
@@ -1526,7 +1599,7 @@ const App: React.FC = () => {
         </section>
 
         {/* Projects Section */}
-        <section id="projects" className="py-16">
+        <section id="projects" className="py-12 md:py-16">
           <div className="max-w-6xl mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1534,19 +1607,19 @@ const App: React.FC = () => {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className={`text-4xl font-bold mb-4 ${
+              <h2 className={`text-3xl md:text-4xl font-bold mb-4 text-center ${
                 isDark ? 'text-white' : 'text-gray-800'
               }`}>
                 Projects
               </h2>
-              <p className={`text-lg mb-12 ${
+              <p className={`text-base md:text-lg mb-8 md:mb-12 text-center px-4 ${
                 isDark ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 A collection of my technical projects showcasing blockchain development, smart contracts, and decentralized applications.
               </p>
-              <div className="space-y-8">
+              <div className="space-y-6 md:space-y-8">
                 {/* First two projects in a row */}
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid sm:grid-cols-2 gap-4 md:gap-6">
                   {PORTFOLIO_DATA.projects.slice(0, 2).map((project, index) => (
                     <motion.div
                       key={index}
@@ -1567,15 +1640,15 @@ const App: React.FC = () => {
                           isDark ? 'bg-gray-800/50' : 'bg-white/80'
                         }`}></div>
                       </div>
-                      <div className="flex justify-between items-start mb-4">
-                        <h3 className={`text-xl font-bold ${
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-2 sm:space-y-0">
+                        <h3 className={`text-lg md:text-xl font-bold ${
                           isDark ? 'text-white' : 'text-gray-800'
                         }`}>
                           {project.title}
                         </h3>
                         <div className="flex items-center gap-1">
-                          <Phone size={14} className="text-gray-400" />
-                          <span className={`text-sm ${
+                          <Phone size={12} className="text-gray-400" />
+                          <span className={`text-xs md:text-sm ${
                             isDark ? 'text-gray-400' : 'text-gray-500'
                           }`}>
                             {project.date}
@@ -1583,7 +1656,7 @@ const App: React.FC = () => {
                         </div>
                       </div>
                       
-                      <p className={`text-sm mb-4 ${
+                      <p className={`text-xs md:text-sm mb-4 line-clamp-3 ${
                         isDark ? 'text-gray-300' : 'text-gray-700'
                       }`}>
                         {project.description}
@@ -1747,7 +1820,7 @@ const App: React.FC = () => {
         </section>
 
         {/* Publications Section */}
-        <section id="publications" className="py-16">
+        <section id="publications" className="py-12 md:py-16">
           <div className="max-w-6xl mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -1755,12 +1828,12 @@ const App: React.FC = () => {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className={`text-4xl font-bold mb-4 ${
+              <h2 className={`text-3xl md:text-4xl font-bold mb-4 text-center ${
                 isDark ? 'text-white' : 'text-gray-800'
               }`}>
                 Publications
               </h2>
-              <p className={`text-lg mb-12 ${
+              <p className={`text-base md:text-lg mb-8 md:mb-12 text-center px-4 ${
                 isDark ? 'text-gray-300' : 'text-gray-600'
               }`}>
                 Research contributions and academic publications in blockchain technology and energy sector applications.
@@ -1785,18 +1858,18 @@ const App: React.FC = () => {
                         isDark ? 'bg-gray-800/50' : 'bg-white/80'
                       }`}></div>
                     </div>
-                    <div className="flex justify-between items-start mb-4">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-4 space-y-2 sm:space-y-0">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded bg-gray-600 flex items-center justify-center">
+                        <div className="w-5 h-5 md:w-6 md:h-6 rounded bg-gray-600 flex items-center justify-center">
                           <span className="text-xs text-white">📖</span>
                         </div>
-                        <span className={`text-sm ${
+                        <span className={`text-xs md:text-sm ${
                           isDark ? 'text-gray-300' : 'text-gray-600'
                         }`}>
                           {pub.type}
                         </span>
                       </div>
-                      <div className={`px-3 py-1 rounded-full text-xs ${
+                      <div className={`px-2 md:px-3 py-1 rounded-full text-xs ${
                         pub.status === 'Published' 
                           ? 'bg-green-900 text-green-300' 
                           : 'bg-yellow-900 text-yellow-300'
@@ -1805,19 +1878,19 @@ const App: React.FC = () => {
                       </div>
                     </div>
                     
-                    <h3 className={`text-xl font-bold mb-2 ${
+                    <h3 className={`text-lg md:text-xl font-bold mb-2 ${
                       isDark ? 'text-white' : 'text-gray-800'
                     }`}>
                       {pub.title}
                     </h3>
                     
-                    <p className={`text-sm mb-4 ${
+                    <p className={`text-xs md:text-sm mb-3 ${
                       isDark ? 'text-gray-300' : 'text-gray-600'
                     }`}>
                       Authors: {pub.authors}
                     </p>
                     
-                    <p className={`text-sm mb-4 ${
+                    <p className={`text-xs md:text-sm mb-4 line-clamp-3 ${
                       isDark ? 'text-gray-300' : 'text-gray-700'
                     }`}>
                       {pub.description}
@@ -1947,25 +2020,25 @@ const App: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className={`py-8 border-t transition-all duration-300 ${
+      <footer className={`py-6 md:py-8 border-t transition-all duration-300 ${
         isDark 
           ? 'bg-black/50 border-gray-800 text-gray-400' 
           : 'bg-gray-50/50 border-gray-200 text-gray-600'
       }`}>
         <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="mb-4 md:mb-0">
-              <h3 className={`text-lg font-semibold mb-2 ${
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="text-center md:text-left">
+              <h3 className={`text-base md:text-lg font-semibold mb-2 ${
                 isDark ? 'text-white' : 'text-gray-800'
               }`}>
                 Follow Me
               </h3>
-              <div className="flex space-x-4">
+              <div className="flex justify-center md:justify-start space-x-3 md:space-x-4">
                 {[
-                  { icon: <Linkedin size={24} />, href: PORTFOLIO_DATA.contact.linkedin, label: 'LinkedIn' },
-                  { icon: <Github size={24} />, href: `https://${PORTFOLIO_DATA.contact.github}`, label: 'GitHub' },
-                  { icon: <Twitter size={24} />, href: PORTFOLIO_DATA.contact.twitter, label: 'Twitter' },
-                  { icon: <Mail size={24} />, href: `mailto:${PORTFOLIO_DATA.contact.email}`, label: 'Email' },
+                  { icon: <Linkedin size={20} className="md:w-6 md:h-6" />, href: PORTFOLIO_DATA.contact.linkedin, label: 'LinkedIn' },
+                  { icon: <Github size={20} className="md:w-6 md:h-6" />, href: `https://${PORTFOLIO_DATA.contact.github}`, label: 'GitHub' },
+                  { icon: <Twitter size={20} className="md:w-6 md:h-6" />, href: PORTFOLIO_DATA.contact.twitter, label: 'Twitter' },
+                  { icon: <Mail size={20} className="md:w-6 md:h-6" />, href: `mailto:${PORTFOLIO_DATA.contact.email}`, label: 'Email' },
                 ].map((social, index) => (
                   <motion.a
                     key={index}

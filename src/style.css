@@ -55,4 +55,20 @@
   .text-shadow-lg {
     text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  .safe-area-inset {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
 }
