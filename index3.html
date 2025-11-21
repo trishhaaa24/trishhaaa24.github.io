@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trisha Rami | Blockchain Researcher & Dev</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100..800&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        void: '#030303',
+                        hyper: '#FF4D00', // Hyper Orange (Transactions)
+                        cyan: '#00E5FF',  // Electric Cyan (Globe)
+                        glass: 'rgba(255, 255, 255, 0.03)',
+                        border: 'rgba(255, 255, 255, 0.15)'
+                    },
+                    fontFamily: {
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                        sans: ['"Space Grotesk"', 'sans-serif'],
+                    },
+                    animation: {
+                        'marquee': 'marquee 25s linear infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #030303;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* Lenis Smooth Scroll Recommended CSS */
+        html.lenis {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .lenis.lenis-scrolling iframe {
+            pointer-events: none;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030303;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF4D00;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -1;
+            /* UPDATED: Lowered opacity to improve text readability */
+            opacity: 0.7; 
+        }
+        
+        /* Grid Background */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        /* Dither/Noise Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.05;
+            background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.75%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%221%22/%3E%3C/svg%3E');
+        }
+
+        .service-card {
+            background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0) 100%);
+            backdrop-filter: blur(5px);
+        }
+        .service-card:hover {
+            border-color: #FF4D00;
+            background: rgba(255, 77, 0, 0.05);
+            transform: translateY(-5px);
+        }
+        
+        .marquee-content {
+            display: flex;
+            gap: 4rem;
+            white-space: nowrap;
+        }
+        
+        /* Stroke Text Utility */
+        .text-stroke-only {
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+            color: transparent;
+        }
+        
+        /* Hover effect for main name */
+        .hero-name:hover .text-stroke-only {
+            color: #FF4D00;
+            -webkit-text-stroke: 0px;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-hyper selection:text-void">
+
+    <div class="grid-bg"></div>
+    <div class="noise-overlay"></div>
+    <div id="canvas-container"></div>
+
+    <nav class="fixed w-full z-40 top-0 left-0 p-6 flex justify-between items-center mix-blend-difference">
+        <div class="font-mono text-sm tracking-tighter font-bold">
+            TRISHA_RAMI<span class="text-hyper">.ETH</span>
+        </div>
+        <div class="hidden md:flex gap-8 font-mono text-xs font-bold">
+            <a href="#work" class="hover:text-hyper transition-colors">[ PROOF_OF_WORK ]</a>
+            <a href="#research" class="hover:text-hyper transition-colors">[ RESEARCH ]</a>
+            <!-- <a href="#publications" class="hover:text-hyper transition-colors">[ PUBLICATIONS ]</a> -->
+        </div>
+        <a href="#contact" class="border border-white/20 px-4 py-2 font-mono text-xs hover:bg-hyper hover:text-void hover:border-hyper transition-all duration-300">
+            CONNECT_WALLET
+        </a>
+    </nav>
+
+    <main>
+        <section class="min-h-screen flex flex-col justify-center items-start px-6 md:px-24 pt-20 pb-32 relative overflow-hidden">
+            
+            <div class="max-w-6xl z-10 relative">
+                <div class="flex items-center gap-3 mb-8 reveal-text">
+                    <div class="w-2 h-2 bg-hyper animate-pulse"></div>
+                    <p class="font-mono text-hyper text-sm tracking-widest">
+                        BLOCKCHAIN RESEARCHER & DEVELOPER
+                    </p>
+                </div>
+                
+                <h1 class="hero-name font-sans font-bold text-[12vw] leading-[0.85] tracking-tighter mb-8 uppercase cursor-default transition-all duration-500">
+                    <span class="reveal-text block hover:text-hyper transition-colors">TRISHA</span>
+                    <span class="reveal-text block text-stroke-only transition-all duration-500">RAMI</span>
+                </h1>
+                
+                <div class="flex flex-col md:flex-row gap-10 mt-8">
+                    <p class="font-mono text-sm md:text-base text-gray-400 max-w-lg leading-relaxed reveal-text border-l-2 border-hyper pl-6">
+                        Specializing in <span class="text-white">Game Theory</span>, <span class="text-white">Miner Incentives</span>, and <span class="text-white">Smart Contract Security</span>. Building resilient decentralized infrastructure on Ethereum & Polygon.
+                    </p>
+
+                    <div class="flex flex-col gap-4 reveal-text justify-center">
+                        <a href="#work" class="group flex items-center gap-4 font-mono text-sm font-bold hover:text-hyper transition-colors">
+                            <span class="w-8 h-[1px] bg-white group-hover:bg-hyper transition-colors"></span>
+                            VIEW PROJECTS
+                        </a>
+                        <a href="#research" class="group flex items-center gap-4 font-mono text-sm font-bold hover:text-hyper transition-colors">
+                            <span class="w-8 h-[1px] bg-white group-hover:bg-hyper transition-colors"></span>
+                            READ RESEARCH
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-0 left-0 w-full border-y border-white/10 bg-void/50 backdrop-blur-md py-4 overflow-hidden z-20">
+                <div class="marquee-content animate-marquee font-mono text-xs text-gray-400">
+                    <span>GAME THEORY</span>
+                    <span>+++</span>
+                    <span>SOLIDITY</span>
+                    <span>+++</span>
+                    <span>MATLAB SIMULATIONS</span>
+                    <span>+++</span>
+                    <span>ETHEREUM</span>
+                    <span>+++</span>
+                    <span>MINER INCENTIVES</span>
+                    <span>+++</span>
+                    <span>SMART CONTRACT SECURITY</span>
+                    <span>+++</span>
+                    <span>REACT.JS</span>
+                    <span>+++</span>
+                    <span>IPFS STORAGE</span>
+                    <span>+++</span>
+                    <span>WEB3.JS</span>
+                    <span>+++</span>
+                    <span>POLYGON</span>
+                    <span>+++</span>
+                    <span>GAME THEORY</span>
+                    <span>+++</span>
+                    <span>SOLIDITY</span>
+                    <span>+++</span>
+                    <span>MATLAB SIMULATIONS</span>
+                    <span>+++</span>
+                    <span>ETHEREUM</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="research" class="py-32 px-6 md:px-24 border-t border-white/10 relative bg-void/80 backdrop-blur-sm">
+            <div class="mb-20 flex flex-col md:flex-row justify-between items-end gap-8">
+                <div>
+                    <div class="font-mono text-hyper text-xs mb-2">01 / EXPERTISE</div>
+                    <h2 class="font-sans text-4xl md:text-6xl mb-4">RESEARCH LAB</h2>
+                </div>
+                <div class="font-mono text-xs text-gray-500 text-right hidden md:block">
+                     CURRENT FOCUS: MINER BEHAVIOR<br>
+                     STATUS: PUBLISHED
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="service-card border border-border p-8 md:p-12 relative overflow-hidden group h-full flex flex-col justify-between">
+                    <div>
+                        <div class="absolute top-0 right-0 bg-hyper text-void font-mono text-xs px-3 py-1 font-bold">
+                            DA-IICT INTERNSHIP
+                        </div>
+                        <h3 class="font-sans text-3xl mb-6 text-white mt-4">Miner Behavior &<br>Fee Queueing</h3>
+                        <p class="font-mono text-xs text-gray-400 leading-relaxed mb-8 border-l border-gray-700 pl-4">
+                            Modeled miner strategies under varying fee structures using game-theoretic approaches. Analyzed transaction validation fairness and scalability in decentralized networks.
+                        </p>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap gap-2 mb-8">
+                            <span class="px-2 py-1 border border-white/10 text-[10px] font-mono text-hyper">GAME THEORY</span>
+                            <span class="px-2 py-1 border border-white/10 text-[10px] font-mono text-hyper">MATHEMATICAL MODELING</span>
+                            <span class="px-2 py-1 border border-white/10 text-[10px] font-mono text-hyper">PYTHON</span>
+                        </div>
+                        <div class="font-mono text-xs text-gray-500 group-hover:text-white transition-colors">
+                            > Analyzed incentive compatibility
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <a href="https://www.igi-global.com/gateway/chapter/388449" target="_blank" class="border-b border-border pb-6 hover:pl-4 transition-all cursor-pointer group block">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-sans text-xl group-hover:text-hyper transition-colors">Blockchain in Energy Sector</h4>
+                            <span class="font-mono text-[10px] text-gray-500 border border-gray-800 px-2 rounded">IGI GLOBAL</span>
+                        </div>
+                        <p class="font-mono text-xs text-gray-400">
+                            Co-authored chapter on blockchain's role in energy trading and smart grids.
+                        </p>
+                    </a>
+
+                    <div class="border-b border-border pb-6 hover:pl-4 transition-all cursor-pointer group">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-sans text-xl group-hover:text-hyper transition-colors">NFTs & Digital Ownership</h4>
+                            <span class="font-mono text-[10px] text-gray-500 border border-gray-800 px-2 rounded">BOOK CHAPTER</span>
+                        </div>
+                        <p class="font-mono text-xs text-gray-400">
+                            Analysis of ERC-721/1155 standards, IP protection, and cross-chain interoperability.
+                        </p>
+                    </div>
+
+                    <div class="border-b border-border pb-6 hover:pl-4 transition-all cursor-pointer group">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-sans text-xl group-hover:text-hyper transition-colors">DeFi: Beyond Banking</h4>
+                            <span class="font-mono text-[10px] text-gray-500 border border-gray-800 px-2 rounded">MEDIUM</span>
+                        </div>
+                        <p class="font-mono text-xs text-gray-400">
+                            Exploring how protocols reshape financial inclusion while addressing scalability.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="work" class="py-32 bg-void relative">
+            <div class="px-6 md:px-24 mb-16">
+                <div class="font-mono text-hyper text-xs mb-2">02 / DEPLOYMENTS</div>
+                <h2 class="font-sans text-4xl md:text-6xl mb-4">PROOF OF WORK</h2>
+            </div>
+
+            <div class="border-y border-white/10">
+                <a href="https://github.com/trishhaaa24/carbon-offset-tracker" target="_blank" class="project-row group border-b border-white/10 p-8 md:px-24 hover:bg-white/5 transition-colors cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-4">
+                            <span class="font-mono text-hyper text-sm">01</span>
+                            <h3 class="font-sans text-4xl group-hover:translate-x-2 transition-transform duration-300">Carbon Offset Tracker</h3>
+                        </div>
+                        <p class="font-mono text-xs text-gray-500 md:pl-10 max-w-md">
+                            Real-time carbon credit tracking on Ethereum Sepolia. Gas-optimized contracts for cost efficiency.
+                        </p>
+                    </div>
+                    <div class="flex gap-2 font-mono text-[10px] text-gray-400 uppercase">
+                        <span class="border border-gray-800 px-2 py-1">React.js</span>
+                        <span class="border border-gray-800 px-2 py-1">Web3.js</span>
+                        <span class="border border-gray-800 px-2 py-1">Solidity</span>
+                    </div>
+                </a>
+
+                <a href="https://github.com/trishhaaa24/NFT-Minting" target="_blank" class="project-row group border-b border-white/10 p-8 md:px-24 hover:bg-white/5 transition-colors cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-4">
+                            <span class="font-mono text-hyper text-sm">02</span>
+                            <h3 class="font-sans text-4xl group-hover:translate-x-2 transition-transform duration-300">NFT Minting & IPFS</h3>
+                        </div>
+                        <p class="font-mono text-xs text-gray-500 md:pl-10 max-w-md">
+                            Decentralized minting dApp ensuring data integrity via IPFS metadata storage.
+                        </p>
+                    </div>
+                    <div class="flex gap-2 font-mono text-[10px] text-gray-400 uppercase">
+                        <span class="border border-gray-800 px-2 py-1">OpenZeppelin</span>
+                        <span class="border border-gray-800 px-2 py-1">IPFS</span>
+                    </div>
+                </a>
+
+                <div class="project-row group border-b border-white/10 p-8 md:px-24 hover:bg-white/5 transition-colors cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div class="flex flex-col gap-2">
+                        <div class="flex items-center gap-4">
+                            <span class="font-mono text-hyper text-sm">03</span>
+                            <h3 class="font-sans text-4xl group-hover:translate-x-2 transition-transform duration-300">Token Faucet</h3>
+                        </div>
+                        <p class="font-mono text-xs text-gray-500 md:pl-10 max-w-md">
+                            Controlled token distribution mechanism on Polygon with anti-abuse logic.
+                        </p>
+                    </div>
+                    <div class="flex gap-2 font-mono text-[10px] text-gray-400 uppercase">
+                        <span class="border border-gray-800 px-2 py-1">Polygon</span>
+                        <span class="border border-gray-800 px-2 py-1">Security</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer id="contact" class="min-h-[70vh] flex flex-col justify-between p-6 md:px-24 py-20 bg-hyper text-void relative overflow-hidden">
+            <div class="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyIiBoZWlnaHQ9IjIiPjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiMwMDAiLz48L3N2Zz4=')]"></div>
+            
+            <div class="relative z-10">
+                <p class="font-mono text-sm tracking-widest border-b border-void/20 pb-4 inline-block w-full">
+                    // INITIALIZE_HANDSHAKE
+                </p>
+                <h2 class="font-sans text-6xl md:text-9xl tracking-tighter leading-none mt-10 font-bold">
+                    OPEN FOR<br>COLLABORATION
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-20 relative z-10">
+                <div>
+                    <h4 class="font-mono font-bold mb-4 uppercase">Comms Channels</h4>
+                    <a href="mailto:trisharami24@gmail.com" class="block font-mono text-xl md:text-2xl hover:underline mb-2">
+                        trisharami24@gmail.com ↗
+                    </a>
+                    <p class="font-mono text-xs opacity-70 max-w-sm">
+                        Interested in Game Theory, AI, or DeFi? Let's discuss the future of decentralized systems.
+                    </p>
+                </div>
+                <div class="flex flex-col justify-end items-start md:items-end">
+                    <div class="flex gap-6 font-mono text-sm font-bold uppercase">
+                        <a href="https://linkedin.com/in/trisha-rami-42834824b" target="_blank" class="hover:bg-void hover:text-hyper px-2 py-1 transition-colors">LinkedIn</a>
+                        <a href="https://github.com/trishhaaa24" target="_blank" class="hover:bg-void hover:text-hyper px-2 py-1 transition-colors">GitHub</a>
+                        <a href="https://medium.com/@trisharami24" target="_blank" class="hover:bg-void hover:text-hyper px-2 py-1 transition-colors">Medium</a>
+                    </div>
+                    <p class="font-mono text-xs mt-6 opacity-60">
+                        © 2025 TRISHA RAMI. ALL RIGHTS RESERVED.
+                    </p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script type="x-shader/x-vertex" id="vertexShader">
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        varying vec2 vUv;
+        
+        void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vPosition = position;
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    </script>
+
+    <script type="x-shader/x-fragment" id="fragmentShader">
+        uniform sampler2D earthTexture;
+        uniform vec3 uColor;
+        uniform vec3 uLightPos;
+        uniform float uTime;
+        
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        varying vec2 vUv;
+        
+        // 4x4 Bayer Matrix for Dither
+        float dither4x4(vec2 position, float brightness) {
+            int x = int(mod(position.x, 4.0));
+            int y = int(mod(position.y, 4.0));
+            int index = x + y * 4;
+            float limit = 0.0;
+            if (index == 0) limit = 0.0625; if (index == 1) limit = 0.5625;
+            if (index == 2) limit = 0.1875; if (index == 3) limit = 0.6875;
+            if (index == 4) limit = 0.8125; if (index == 5) limit = 0.3125;
+            if (index == 6) limit = 0.9375; if (index == 7) limit = 0.4375;
+            if (index == 8) limit = 0.25;   if (index == 9) limit = 0.75;
+            if (index == 10) limit = 0.125; if (index == 11) limit = 0.625;
+            if (index == 12) limit = 1.0;   if (index == 13) limit = 0.5;
+            if (index == 14) limit = 0.875; if (index == 15) limit = 0.375;
+            return brightness < limit ? 0.0 : 1.0;
+        }
+
+        void main() {
+            // 1. Sample Geography (Land vs Sea)
+            vec4 texColor = texture2D(earthTexture, vUv);
+            float isLand = smoothstep(0.2, 0.4, texColor.r); // Threshold to separate land/sea
+            
+            // 2. Lighting
+            vec3 viewDirection = normalize(cameraPosition - vPosition);
+            vec3 lightDir = normalize(uLightPos - vPosition);
+            float diff = max(dot(vNormal, lightDir), 0.0);
+            
+            // 3. Fresnel Rim Light (Atmosphere)
+            float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0); // Simple view-based rim
+            
+            // 4. Scanline Effect (For Ocean)
+            float scanline = sin(gl_FragCoord.y * 0.2 + uTime * 2.0) * 0.5 + 0.5;
+
+            // 5. Dither Application
+            // Land brightness = High diff + Ambient
+            float landBrightness = diff + 0.4;
+            float landDither = dither4x4(gl_FragCoord.xy, landBrightness);
+            
+            // Ocean brightness = Darker, mixed with scanline
+            float seaBrightness = (diff * 0.2) + (scanline * 0.1);
+            float seaDither = dither4x4(gl_FragCoord.xy, seaBrightness);
+
+            // 6. Combine Logic
+            vec3 finalColor;
+            
+            // Base Earth Color - GLOBAL COLOR CHANGE HERE
+            vec3 landColor = uColor; 
+            vec3 seaColor = vec3(0.02, 0.02, 0.05); // Dark Void Blue
+            
+            if(isLand > 0.5) {
+                // Land: Apply dense dither
+                finalColor = mix(vec3(0.0), landColor, landDither);
+            } else {
+                // Sea: Apply faint dither/scanline
+                finalColor = mix(vec3(0.0), seaColor, seaDither);
+            }
+
+            // Add Atmosphere Glow
+            finalColor += vec3(0.0, 0.5, 1.0) * fresnel * 0.5; // Cyan Rim Light
+
+            gl_FragColor = vec4(finalColor, 1.0);
+        }
+    </script>
+
+    <script type="x-shader/x-vertex" id="arcVertexShader">
+        varying vec2 vUv;
+        void main() {
+            vUv = uv;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+    </script>
+    <script type="x-shader/x-fragment" id="arcFragmentShader">
+        varying vec2 vUv;
+        uniform float uTime;
+        uniform vec3 uColor;
+        
+        void main() {
+            // Create "Block" pattern simulating distinct transaction blocks
+            float speed = 0.5;
+            float travel = mod(vUv.x * 10.0 - (uTime * speed * 10.0), 10.0);
+            
+            // Step function to create discrete blocks instead of smooth lines
+            // "0.8" determines the gap size between blocks
+            float block = step(0.6, fract(travel)); 
+            
+            if (block < 0.1) discard;
+
+            gl_FragColor = vec4(uColor, 1.0);
+        }
+    </script>
+
+    <script>
+        const initSmoothScroll = () => {
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                direction: 'vertical',
+                smooth: true,
+                smoothTouch: false,
+            });
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add((time) => lenis.raf(time * 1000));
+            gsap.ticker.lagSmoothing(0);
+        };
+
+        const initThree = () => {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            
+            // Camera setup
+            const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 6.5;
+
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            // --- 1. Load Earth Geography Texture ---
+            const textureLoader = new THREE.TextureLoader();
+            const earthTexture = textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_specular_2048.jpg');
+
+            // --- 2. The Holographic Earth (CYAN) ---
+            const sphereMaterial = new THREE.ShaderMaterial({
+                vertexShader: document.getElementById('vertexShader').textContent,
+                fragmentShader: document.getElementById('fragmentShader').textContent,
+                uniforms: {
+                    earthTexture: { value: earthTexture },
+                    uColor: { value: new THREE.Color('#00E5FF') }, // ELECTRIC CYAN GLOBE
+                    uLightPos: { value: new THREE.Vector3(10, 5, 5) },
+                    uTime: { value: 0.0 }
+                }
+            });
+
+            const earthGeometry = new THREE.SphereGeometry(2, 64, 64); 
+            const earthMesh = new THREE.Mesh(earthGeometry, sphereMaterial);
+            scene.add(earthMesh);
+
+            // --- 3. Data Blocks (HYPER ORANGE) ---
+            const arcsGroup = new THREE.Group();
+            const arcMaterial = new THREE.ShaderMaterial({
+                vertexShader: document.getElementById('arcVertexShader').textContent,
+                fragmentShader: document.getElementById('arcFragmentShader').textContent,
+                uniforms: {
+                    uColor: { value: new THREE.Color('#FF4D00') }, // HYPER ORANGE TRANSACTIONS
+                    uTime: { value: 0.0 }
+                },
+                transparent: true,
+                side: THREE.DoubleSide
+            });
+
+            const getPointOnSphere = (radius) => {
+                const phi = Math.acos(-1 + (2 * Math.random()));
+                const theta = Math.sqrt(Math.PI * 250) * phi;
+                return new THREE.Vector3(
+                    radius * Math.cos(theta) * Math.sin(phi),
+                    radius * Math.sin(theta) * Math.sin(phi),
+                    radius * Math.cos(phi)
+                );
+            }
+
+            for (let i = 0; i < 25; i++) {
+                const start = getPointOnSphere(2);
+                const end = getPointOnSphere(2);
+                const mid = start.clone().add(end).multiplyScalar(0.5).normalize().multiplyScalar(2.5 + Math.random() * 0.8);
+                const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+                // Thicker tubes for "Block" visibility
+                const tubeGeo = new THREE.TubeGeometry(curve, 40, 0.015, 4, false);
+                const tube = new THREE.Mesh(tubeGeo, arcMaterial);
+                arcsGroup.add(tube);
+            }
+            earthMesh.add(arcsGroup);
+
+            // --- 4. Surface Nodes (Pulsing) ---
+            const nodesGeo = new THREE.BufferGeometry();
+            const nodePositions = [];
+            for(let i=0; i<40; i++){
+                const v = getPointOnSphere(2.01); 
+                nodePositions.push(v.x, v.y, v.z);
+            }
+            nodesGeo.setAttribute('position', new THREE.Float32BufferAttribute(nodePositions, 3));
+            const nodesMaterial = new THREE.PointsMaterial({
+                color: 0x00E5FF, // Cyan Nodes
+                size: 0.08,
+                transparent: true,
+                opacity: 0.8
+            });
+            const nodesMesh = new THREE.Points(nodesGeo, nodesMaterial);
+            earthMesh.add(nodesMesh);
+
+            // --- 5. Starfield ---
+            const starGeo = new THREE.BufferGeometry();
+            const starCount = 1500;
+            const starPos = new Float32Array(starCount * 3);
+            for(let i=0; i<starCount*3; i++) {
+                starPos[i] = (Math.random() - 0.5) * 40;
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+            const starMat = new THREE.PointsMaterial({
+                color: 0x444444,
+                size: 0.05,
+                transparent: true
+            });
+            const stars = new THREE.Points(starGeo, starMat);
+            scene.add(stars);
+
+            // --- Animation Loop ---
+            const clock = new THREE.Clock();
+            const animate = () => {
+                requestAnimationFrame(animate);
+                const time = clock.getElapsedTime();
+                
+                sphereMaterial.uniforms.uTime.value = time;
+                arcMaterial.uniforms.uTime.value = time;
+                
+                // UPDATED: Slowed down node pulsing
+                nodesMaterial.size = 0.08 + Math.sin(time * 0.8) * 0.02; // Multiplier reduced to 0.8
+                nodesMaterial.opacity = 0.6 + Math.sin(time * 0.5) * 0.4; // Multiplier reduced to 0.5
+
+                // Rotation
+                earthMesh.rotation.y = time * 0.08;
+                stars.rotation.y = time * 0.02; 
+
+                renderer.render(scene, camera);
+            };
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            return { mesh: earthMesh, camera, material: sphereMaterial };
+        };
+
+        const initAnimations = (threeObj) => {
+            gsap.registerPlugin(ScrollTrigger);
+            gsap.from(".reveal-text", {
+                y: 60,
+                opacity: 0,
+                duration: 1.2,
+                stagger: 0.1,
+                ease: "expo.out",
+                delay: 0.1
+            });
+            gsap.to(threeObj.mesh.rotation, {
+                scrollTrigger: {
+                    trigger: "body",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 1.5
+                },
+                x: Math.PI * 0.5,
+                y: Math.PI * 2
+            });
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initSmoothScroll();
+            const threeObj = initThree();
+            initAnimations(threeObj);
+        });
+    </script>
+</body>
+</html>
